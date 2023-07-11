@@ -3,6 +3,7 @@ package goparsedata
 import (
 	"fmt"
 	"github.com/fitlcarlos/godata"
+	"strings"
 )
 
 type DataSetItem struct {
@@ -15,6 +16,8 @@ type DataSetItem struct {
 	EndText     string
 	Separator   string
 	FieldType   TypeFieldJson
+	FieldsHide  []string
+	FieldsConf  []*Field
 	DataSet     *godata.DataSet
 	SubQueries  *DataSetCollection
 	RootNode    bool
@@ -25,7 +28,9 @@ type DataSetItem struct {
 
 func NewDataSetItem(collection any) *DataSetItem {
 	dsi := &DataSetItem{
-		Owner: collection,
+		Owner:      collection,
+		FieldsHide: []string{},
+		FieldsConf: []*Field{},
 	}
 
 	dsc, ok := collection.(*DataSetCollection)
@@ -112,6 +117,35 @@ func (dsi *DataSetItem) AddMasterFields(fields ...string) *DataSetItem {
 	return dsi
 }
 
+func (dsi *DataSetItem) ConfigField(fieldName string, caption string, boolValue bool, trueValue string, falseValue string, acceptNull bool) *DataSetItem {
+	var field *Field
+	field = dsi.fieldByName(fieldName)
+	if field == nil {
+		field := &Field{
+			Name:       strings.ToUpper(fieldName),
+			Caption:    caption,
+			BoolValue:  boolValue,
+			TrueValue:  trueValue,
+			FalseValue: falseValue,
+			AcceptNull: acceptNull,
+		}
+		dsi.FieldsConf = append(dsi.FieldsConf, field)
+	}
+	return dsi
+}
+
+func (dsi *DataSetItem) HideField(fieldName string) *DataSetItem {
+	dsi.FieldsHide = append(dsi.FieldsHide, fieldName)
+	return dsi
+}
+
+func (dsi *DataSetItem) HideFields(fieldsName ...string) *DataSetItem {
+	for i := 0; i < len(fieldsName); i++ {
+		dsi.HideField(fieldsName[i])
+	}
+	return dsi
+}
+
 func (dsi *DataSetItem) SetInputParam(paramName string, paramValue any) *DataSetItem {
 	dsi.DataSet.SetInputParam(paramName, paramValue)
 	return dsi
@@ -125,4 +159,13 @@ func (dsi *DataSetItem) SetOutputParam(paramName string, paramType any) *DataSet
 func (dsi *DataSetItem) SetMacro(macroName string, macroValue any) *DataSetItem {
 	dsi.DataSet.SetMacro(macroName, macroValue)
 	return dsi
+}
+
+func (dsi *DataSetItem) fieldByName(fieldName string) *Field {
+	for i := 0; i < len(dsi.FieldsConf); i++ {
+		if strings.ToUpper(dsi.FieldsConf[i].Name) == strings.ToUpper(fieldName) {
+			return dsi.FieldsConf[i]
+		}
+	}
+	return nil
 }

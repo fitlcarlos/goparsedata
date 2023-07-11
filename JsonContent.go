@@ -26,12 +26,13 @@ func (jc *JsonContent) GetContent() CustomContent {
 }
 
 func (jc *JsonContent) ReadTree(rsc *DataSetCollection, list *godata.Strings) error {
-
 	if rsc.count() > 0 {
 		for i := 0; i < rsc.count(); i++ {
 			item := rsc.Items[i]
 
 			if item.DataSet != nil {
+				jc.ConfigFields(item)
+
 				err := item.DataSet.Open()
 				if err != nil {
 					return err
@@ -39,11 +40,20 @@ func (jc *JsonContent) ReadTree(rsc *DataSetCollection, list *godata.Strings) er
 
 				switch item.FieldType {
 				case TcjObject:
-					return jc.loadObject(item, list, TcjObject, item.Indentation)
+					err = jc.loadObject(item, list, TcjObject, item.Indentation)
+					if err != nil {
+						return err
+					}
 				case TcjList:
-					return jc.loadList(item, list, TcjList, item.Indentation)
+					err = jc.loadList(item, list, TcjList, item.Indentation)
+					if err != nil {
+						return err
+					}
 				case TcjObjectList:
-					return jc.loadObjectList(item, list, TcjObjectList, item.Indentation)
+					err = jc.loadObjectList(item, list, TcjObjectList, item.Indentation)
+					if err != nil {
+						return err
+					}
 				}
 			}
 
@@ -109,22 +119,24 @@ func (jc *JsonContent) loadObject(dsi *DataSetItem, list *godata.Strings, fieldT
 					}
 				}
 
-			}
-
-			if field.Index == len(dsi.DataSet.Fields.List)-1 {
-				if dsi.SubQueries.count() == 0 {
-					list.Add(jc.getSpace(indentation+2) + key + " : " + value)
+				if field.Index == len(dsi.DataSet.Fields.List)-1 {
+					if dsi.SubQueries.count() == 0 {
+						list.Add(jc.getSpace(indentation+2) + key + " : " + value)
+					} else {
+						list.Add(jc.getSpace(indentation+2) + key + " : " + value + ",")
+					}
 				} else {
 					list.Add(jc.getSpace(indentation+2) + key + " : " + value + ",")
 				}
-			} else {
-				list.Add(jc.getSpace(indentation+2) + key + " : " + value + ",")
 			}
 		}
 
 		if dsi.SubQueries != nil {
 			if dsi.SubQueries.count() > 0 {
-				jc.ReadTree(dsi.SubQueries, list)
+				err := jc.ReadTree(dsi.SubQueries, list)
+				if err != nil {
+					return err
+				}
 			}
 		}
 
@@ -280,6 +292,28 @@ func (jc *JsonContent) removeEscape(value string) string {
 
 	}
 	return character
+}
+
+func (jc *JsonContent) ConfigFields(item *DataSetItem) {
+	item.DataSet.CreateFields()
+
+	for i := 0; i < len(item.FieldsHide); i++ {
+		field := item.DataSet.FieldByName(item.FieldsHide[i])
+		if field != nil {
+			field.Visible = false
+		}
+	}
+
+	for i := 0; i < len(item.FieldsConf); i++ {
+		field := item.DataSet.FieldByName(item.FieldsConf[i].Name)
+		if field != nil {
+			field.Caption = item.FieldsConf[i].Caption
+			field.BoolValue = item.FieldsConf[i].BoolValue
+			field.TrueValue = item.FieldsConf[i].TrueValue
+			field.FalseValue = item.FieldsConf[i].FalseValue
+			field.AcceptNull = item.FieldsConf[i].AcceptNull
+		}
+	}
 }
 
 func (jc *JsonContent) getQuotedField(value string) string {

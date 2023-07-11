@@ -2,7 +2,7 @@ module github.com/fitlcarlos/goparsedata
 
 go 1.20
 
-require github.com/fitlcarlos/godata v1.0.23
+require github.com/fitlcarlos/godata v1.0.24
 
 require (
 	github.com/blastrain/vitess-sqlparser v0.0.0-20201030050434-a139afbb1aba // indirect

@@ -45,8 +45,6 @@ func (gpd *GoParseData) toString() (string, error) {
 		}
 	}
 	return list.Text(), nil
-	//cc := gpd.content.GetContent()
-	//return cc.toString(gpd.DataSets)
 }
 
 func (gpd *GoParseData) toStream() ([]byte, error) {

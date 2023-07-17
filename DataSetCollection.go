@@ -74,6 +74,17 @@ func (dsc *DataSetCollection) AddObjectList(caption string) *DataSetItem {
 	return dsi
 }
 
+func (dsc *DataSetCollection) Add(name string, caption string, fieldType TypeFieldJson) *DataSetItem {
+	dsi := NewDataSetItem(dsc)
+	dsi.FieldType = fieldType
+	dsi.Name = name
+	dsi.Caption = caption
+	dsc.Items = append(dsc.Items, dsi)
+	dsi.Index = len(dsc.Items) - 1
+
+	return dsi
+}
+
 func (dsc *DataSetCollection) addItem(dsi *DataSetItem) int {
 	dsc.Items = append(dsc.Items, dsi)
 	dsi.Index = len(dsc.Items) - 1

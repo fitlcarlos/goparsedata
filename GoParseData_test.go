@@ -36,7 +36,7 @@ func TestParseDataMasterDetail(t *testing.T) {
 func TestParseData(t *testing.T) {
 	connectStr := "oracle://nbsama:new@100.0.65.224:1521/fab"
 
-	db, err := data.NewConnection(data.ORACLE, connectStr)
+	db, err := data.NewConnectionOracle(connectStr)
 
 	if err != nil {
 		t.Fatal(err)
@@ -45,12 +45,14 @@ func TestParseData(t *testing.T) {
 	defer db.Close()
 
 	ps := NewGoParseData(db, TypeJsonContent)
+	content := ps.GetContent()
+	content.EscapeStringLineBreak = "\n"
 	Obj1 := ps.AddObject("process1").
 		AddSql("select id, descricao from fab_processo").
 		AddSql("where id = 41")
 
-	Obj1.AddObjectList("lista").
-		AddSql("select id, codigo, descricao, id_processo, ativo from fab_operacao").
+	Obj2 := Obj1.AddObjectList("lista")
+	Obj2.AddSql("select id, codigo, descricao, id_processo, ativo from fab_operacao").
 		AddMasterSource(Obj1.DataSet).
 		AddDetailFields("id_processo").
 		AddMasterFields("id").

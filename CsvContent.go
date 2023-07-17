@@ -19,6 +19,10 @@ func NewCsvContent() Content {
 
 	return csv
 }
+
+func (csv *CsvContent) GetContent() CustomContent {
+	return csv.CustomContent
+}
 func (csv *CsvContent) ReadTree(dsi *DataSetCollection, list *godata.Strings) error {
 	if dsi.count() > 0 {
 		if dsi.Items[0].DataSet != nil {

@@ -46,7 +46,10 @@ func TestParseData(t *testing.T) {
 
 	ps := NewGoParseData(db, TypeJsonContent)
 	content := ps.GetContent()
-	content.EscapeStringLineBreak = "\n"
+
+	content.(*JsonContent).EscapeStringLineBreak = "\n"
+	content.(*JsonContent).QuotedFields = true
+
 	Obj1 := ps.AddObject("process1").
 		AddSql("select id, descricao from fab_processo").
 		AddSql("where id = 41")

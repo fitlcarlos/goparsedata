@@ -25,8 +25,8 @@ func NewGoParseData(conn *godata.Conn, typeContent TypeContent) *GoParseData {
 	return gpd
 }
 
-func (dsc *GoParseData) GetContent() CustomContent {
-	return dsc.content.GetContent()
+func (dsc *GoParseData) GetContent() Content {
+	return dsc.content
 }
 
 func (dsc *GoParseData) AddObject(caption string) *DataSetItem {

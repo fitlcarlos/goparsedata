@@ -1,7 +1,6 @@
 package goparsedata
 
 import (
-	"fmt"
 	"github.com/fitlcarlos/godata"
 	"strings"
 )
@@ -10,8 +9,6 @@ type DataSetItem struct {
 	Owner       any
 	Connection  *godata.Conn
 	Caption     string
-	Name        string
-	DisplayName string
 	BeginText   string
 	EndText     string
 	Separator   string
@@ -36,20 +33,9 @@ func NewDataSetItem(collection any) *DataSetItem {
 	dsc, ok := collection.(*DataSetCollection)
 	if ok {
 		dsi.DataSet = godata.NewDataSet(dsc.getConnection())
-		_, ok := dsc.Owner.(*GoParseData)
-		if ok {
-			dsi.Name = "Root" + fmt.Sprintf("%v", dsi.Index)
-		} else {
-			item, ok := dsc.Owner.(*DataSetItem)
-			if ok {
-				dsi.Name = item.Name
-			}
-		}
 	}
 
-	dsi.DisplayName = dsi.Name
 	dsi.FieldType = TcjFieldElement
-
 	dsi.SubQueries = NewDataSetCollection(dsi)
 	dsi.SubQueries.RootNode = dsi.RootNode
 	dsi.RootNode = collection.(*DataSetCollection).RootNode
@@ -100,6 +86,11 @@ func (dsi *DataSetItem) AddObjectList(caption string) *DataSetItem {
 
 func (dsi *DataSetItem) AddSql(sql string) *DataSetItem {
 	dsi.DataSet.AddSql(sql)
+	return dsi
+}
+
+func (dsi *DataSetItem) Prepare(sql string) *DataSetItem {
+	dsi.DataSet.Prepare()
 	return dsi
 }
 

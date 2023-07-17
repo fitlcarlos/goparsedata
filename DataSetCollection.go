@@ -8,7 +8,6 @@ import (
 type DataSetCollection struct {
 	Owner     any
 	Caption   string
-	Name      string
 	RootNode  bool
 	ItemClass reflect.Type
 	Items     []*DataSetItem
@@ -23,12 +22,10 @@ func NewDataSetCollection(owner any) *DataSetCollection {
 	_, ok := owner.(*GoParseData)
 
 	if ok {
-		dsc.Name = "Root"
 		dsc.RootNode = true
 	} else {
-		dsi, ok := owner.(*DataSetItem)
+		_, ok := owner.(*DataSetItem)
 		if ok {
-			dsc.Name = dsi.Name
 			dsc.RootNode = false
 		}
 	}
@@ -74,10 +71,9 @@ func (dsc *DataSetCollection) AddObjectList(caption string) *DataSetItem {
 	return dsi
 }
 
-func (dsc *DataSetCollection) Add(name string, caption string, fieldType TypeFieldJson) *DataSetItem {
+func (dsc *DataSetCollection) Add(caption string, fieldType TypeFieldJson) *DataSetItem {
 	dsi := NewDataSetItem(dsc)
 	dsi.FieldType = fieldType
-	dsi.Name = name
 	dsi.Caption = caption
 	dsc.Items = append(dsc.Items, dsi)
 	dsi.Index = len(dsc.Items) - 1

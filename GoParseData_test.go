@@ -28,7 +28,7 @@ func TestParseDataMasterDetail(t *testing.T) {
 		AddDetailFields("id_processo").
 		AddMasterFields("id")
 
-	json, err := ps.toString()
+	json, err := ps.ToString()
 
 	fmt.Print(json)
 }
@@ -66,7 +66,7 @@ func TestParseData(t *testing.T) {
 		AddSql("select id, descricao from fab_processo").
 		AddSql("where id = 42")
 
-	json, err := ps.toString()
+	json, err := ps.ToString()
 
 	fmt.Print(json)
 }

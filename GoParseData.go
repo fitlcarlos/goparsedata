@@ -38,7 +38,7 @@ func (dsc *GoParseData) AddObjectList(caption string) *DataSetItem {
 	return dsc.DataSets.AddObjectList(caption)
 }
 
-func (gpd *GoParseData) toString() (string, error) {
+func (gpd *GoParseData) ToString() (string, error) {
 	var list godata.Strings
 
 	if gpd.DataSets != nil {
@@ -52,9 +52,9 @@ func (gpd *GoParseData) toString() (string, error) {
 	return list.Text(), nil
 }
 
-func (gpd *GoParseData) toStream() ([]byte, error) {
+func (gpd *GoParseData) ToStream() ([]byte, error) {
 
-	str, err := gpd.toString()
+	str, err := gpd.ToString()
 
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (gpd *GoParseData) toStream() ([]byte, error) {
 	return output, nil
 }
 
-func (gpd *GoParseData) saveToStream() ([]byte, error) {
+func (gpd *GoParseData) SaveToStream() ([]byte, error) {
 	var list *godata.Strings
 
 	if gpd.DataSets != nil {
@@ -82,29 +82,29 @@ func (gpd *GoParseData) saveToStream() ([]byte, error) {
 	return output, nil
 }
 
-func (gpd *GoParseData) findNoCollectionByName(name string) (*DataSetCollection, error) {
-	return gpd.findNoCollection(gpd.DataSets, name)
+func (gpd *GoParseData) FindNoCollectionByName(name string) (*DataSetCollection, error) {
+	return gpd.FindNoCollection(gpd.DataSets, name)
 }
 
-func (gpd *GoParseData) findNoCollection(collection *DataSetCollection, name string) (*DataSetCollection, error) {
+func (gpd *GoParseData) FindNoCollection(collection *DataSetCollection, name string) (*DataSetCollection, error) {
 	var rsc *DataSetCollection
 
 	if collection.Name == name {
 		rsc = collection
 	} else {
 		for i := 0; i < collection.count(); i++ {
-			gpd.findNoCollection(collection.getItem(i).SubQueries, name)
+			gpd.FindNoCollection(collection.getItem(i).SubQueries, name)
 		}
 	}
 
 	return rsc, nil
 }
 
-func (gpd *GoParseData) findNoItem(name string) *DataSetItem {
-	return gpd.findNoItemByCollection(gpd.DataSets, name)
+func (gpd *GoParseData) FindNoItem(name string) *DataSetItem {
+	return gpd.FindNoItemByCollection(gpd.DataSets, name)
 }
 
-func (gpd *GoParseData) findNoItemByCollection(rsc *DataSetCollection, name string) *DataSetItem {
+func (gpd *GoParseData) FindNoItemByCollection(rsc *DataSetCollection, name string) *DataSetItem {
 	var rsi *DataSetItem
 
 	for i := 0; i < rsc.count(); i++ {
@@ -112,7 +112,7 @@ func (gpd *GoParseData) findNoItemByCollection(rsc *DataSetCollection, name stri
 			rsi = rsc.getItem(i)
 			break
 		} else {
-			rsi = gpd.findNoItemByCollection(rsc.getItem(i).SubQueries, name)
+			rsi = gpd.FindNoItemByCollection(rsc.getItem(i).SubQueries, name)
 		}
 	}
 

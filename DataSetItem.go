@@ -119,6 +119,16 @@ func (dsi *DataSetItem) AddMasterFields(fields ...string) *DataSetItem {
 	return dsi
 }
 
+func (dsi *DataSetItem) ClearDetailFields() *DataSetItem {
+	dsi.DataSet.ClearDetailFields()
+	return dsi
+}
+
+func (dsi *DataSetItem) ClearMasterFields() *DataSetItem {
+	dsi.DataSet.ClearMasterFields()
+	return dsi
+}
+
 func (dsi *DataSetItem) ConfigField(fieldName string, caption string, boolValue bool, trueValue string, falseValue string, acceptNull bool) *DataSetItem {
 	var field *Field
 	field = dsi.fieldByName(fieldName)

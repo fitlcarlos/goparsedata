@@ -1,6 +1,7 @@
 package goparsedata
 
 import (
+	"fmt"
 	"github.com/fitlcarlos/godata"
 	"strings"
 )
@@ -8,6 +9,7 @@ import (
 type DataSetItem struct {
 	Owner       any
 	Connection  *godata.Conn
+	Name        string
 	Caption     string
 	BeginText   string
 	EndText     string
@@ -33,6 +35,15 @@ func NewDataSetItem(collection any) *DataSetItem {
 	dsc, ok := collection.(*DataSetCollection)
 	if ok {
 		dsi.DataSet = godata.NewDataSet(dsc.getConnection())
+		_, ok := dsc.Owner.(*GoParseData)
+		if ok {
+			dsi.Name = "Root" + fmt.Sprintf("%v", dsi.Index)
+		} else {
+			item, ok := dsc.Owner.(*DataSetItem)
+			if ok {
+				dsi.Name = item.Name
+			}
+		}
 	}
 
 	dsi.FieldType = TcjFieldElement

@@ -3,6 +3,7 @@ package goparsedata
 import (
 	"fmt"
 	"github.com/fitlcarlos/godata"
+	"strings"
 )
 
 type GoParseData struct {
@@ -81,28 +82,39 @@ func (gpd *GoParseData) saveToStream() ([]byte, error) {
 	return output, nil
 }
 
-//func (gpd *GoParseData) findNoCollectionByName(name string) (*DataSetCollection, error) {
-//	return gpd.findNoCollection(gpd.DataSets, name)
-//}
+func (gpd *GoParseData) findNoCollectionByName(name string) (*DataSetCollection, error) {
+	return gpd.findNoCollection(gpd.DataSets, name)
+}
 
-//func (gpd *GoParseData) findNoCollection(collection *DataSetCollection, name string) (*DataSetCollection, error) {
-//	var rsc *DataSetCollection
-//
-//	if collection.Name == name {
-//		rsc = collection
-//	} else {
-//		for i := 0; i < collection.count(); i++ {
-//			gpd.findNoCollection(collection.getItem(i).SubQueries, name)
-//		}
-//	}
-//
-//	return rsc, nil
-//}
+func (gpd *GoParseData) findNoCollection(collection *DataSetCollection, name string) (*DataSetCollection, error) {
+	var rsc *DataSetCollection
 
-//func (gpd *GoParseData) findNoItem(name string) (*DataSetItem, error) {
-//	return nil, nil
-//}
+	if collection.Name == name {
+		rsc = collection
+	} else {
+		for i := 0; i < collection.count(); i++ {
+			gpd.findNoCollection(collection.getItem(i).SubQueries, name)
+		}
+	}
 
-//func (gpd *GoParseData) findNoItem(rsc *DataSetCollection, name string) (*DataSetItem, error) {
-//	return nil, nil
-//}
+	return rsc, nil
+}
+
+func (gpd *GoParseData) findNoItem(name string) *DataSetItem {
+	return gpd.findNoItemByCollection(gpd.DataSets, name)
+}
+
+func (gpd *GoParseData) findNoItemByCollection(rsc *DataSetCollection, name string) *DataSetItem {
+	var rsi *DataSetItem
+
+	for i := 0; i < rsc.count(); i++ {
+		if strings.ToUpper(rsc.getItem(i).Name) == strings.ToUpper(name) {
+			rsi = rsc.getItem(i)
+			break
+		} else {
+			rsi = gpd.findNoItemByCollection(rsc.getItem(i).SubQueries, name)
+		}
+	}
+
+	return rsi
+}
